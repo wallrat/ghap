@@ -28,13 +28,27 @@ Pinning by hand is tedious; un-pinning to update is worse. `ghap` does both:
 
 ## Install
 
+### Pre-built binaries (recommended)
+
+Grab a tarball/zip (or `.deb`, `.rpm`, `.apk`) for your platform from the [latest GitHub release](https://github.com/wallrat/ghap/releases/latest).
+
+### One-off (no install)
+
+Requires Go 1.25+.
+
+```sh
+go run github.com/wallrat/ghap@latest .
+```
+
+### From source
+
 Requires Go 1.25+.
 
 ```sh
 go install github.com/wallrat/ghap@latest
 ```
 
-Or build from source:
+Or:
 
 ```sh
 git clone https://github.com/wallrat/ghap.git
@@ -109,6 +123,20 @@ ghap update --latest .                    # bump every action to latest release
 ghap update -i .                          # interactively confirm each change
 ghap --dry-run update .                   # preview without writing
 ```
+#### Inspect
+
+```
+❯ ghap .
+.github/workflows/release.yml
+┌────────────────────────────┬─────────────────────┬────────────┬─────────────────────┐
+│Action                      │Current              │Pin         │Latest               │
+├────────────────────────────┼─────────────────────┼────────────┼─────────────────────┤
+│actions/checkout            │de0fac2e4500 (v6.0.2)│de0fac2e4500│de0fac2e4500 (v6.0.2)│
+│actions/setup-go            │4a3601121dd0 (v6.4.0)│4a3601121dd0│4a3601121dd0 (v6.4.0)│
+│goreleaser/goreleaser-action│1a80836c5c9d (v7.2.1)│1a80836c5c9d│1a80836c5c9d (v7.2.1)│
+└────────────────────────────┴─────────────────────┴────────────┴─────────────────────┘
+```
+
 
 ## How it works
 
