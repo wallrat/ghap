@@ -1,0 +1,22 @@
+name: e2e
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. unpinned tag
+      - uses: actions/checkout@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa5 # v5
+      # 2. unpinned branch
+      - uses: peter-evans/create-pull-request@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb7 # v7
+      # 3. pinned w/ comment, ref moved
+      - uses: actions/cache@ccccccccccccccccccccccccccccccccccccccc4 # v4
+      # 4. pinned w/ comment, unchanged
+      - uses: actions/upload-artifact@2222222222222222222222222222222222222225 # v4
+      # 5. orphan pinned (no comment)
+      - uses: actions/setup-go@3333333333333333333333333333333333333335 # v5
+      # 6. subpath unpinned
+      - uses: actions/cache/restore@ccccccccccccccccccccccccccccccccccccccc4 # v4
+      # 7. tail comment preserved
+      - uses: actions/setup-node@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5 # v5
+      # 8. no-op step (no uses:)
+      - run: echo hello
