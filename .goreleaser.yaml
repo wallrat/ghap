@@ -26,7 +26,7 @@ builds:
       - -trimpath
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
-      - -s -w -X github.com/wallra/ghap/cmd.Version={{.Version}}
+      - -s -w -X github.com/wallrat/ghap/cmd.Version={{.Version}}
 
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -45,9 +45,8 @@ nfpms:
       - deb
       - rpm
       - apk
-    maintainer: Andreas Bielk <andreas@tailjoy.se>
     description: Pin GitHub Actions to immutable commit SHAs.
-    homepage: https://github.com/wallra/ghap
+    homepage: https://github.com/wallrat/ghap
     license: MIT
     bindir: /usr/bin
 

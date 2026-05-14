@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/charmbracelet/x/term"
-	"github.com/wallra/ghap/internal/discover"
-	"github.com/wallra/ghap/internal/pinner"
+	"github.com/wallrat/ghap/internal/discover"
+	"github.com/wallrat/ghap/internal/pinner"
 )
 
 type mutateMode int

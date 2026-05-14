@@ -7,8 +7,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/wallra/ghap/internal/action"
-	"github.com/wallra/ghap/internal/workflow"
+	"github.com/wallrat/ghap/internal/action"
+	"github.com/wallrat/ghap/internal/workflow"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -171,9 +171,9 @@ func BuildChangeRows(result *Result, res Resolver, concurrency int) ([]ChangeRow
 		concurrency = 8
 	}
 	type pending struct {
-		row     ChangeRow
-		owner   string
-		repo    string
+		row   ChangeRow
+		owner string
+		repo  string
 	}
 	var rows []*pending
 	for _, fp := range result.Files {

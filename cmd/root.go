@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/wallra/ghap/internal/discover"
-	"github.com/wallra/ghap/internal/pinner"
-	"github.com/wallra/ghap/internal/resolver"
+	"github.com/wallrat/ghap/internal/discover"
+	"github.com/wallrat/ghap/internal/pinner"
+	"github.com/wallrat/ghap/internal/resolver"
 )
 
 // Version is set at link time.

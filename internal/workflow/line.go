@@ -3,7 +3,7 @@ package workflow
 import (
 	"regexp"
 
-	"github.com/wallra/ghap/internal/action"
+	"github.com/wallrat/ghap/internal/action"
 )
 
 // Captures:

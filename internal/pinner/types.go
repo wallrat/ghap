@@ -1,7 +1,7 @@
 package pinner
 
 import (
-	"github.com/wallra/ghap/internal/workflow"
+	"github.com/wallrat/ghap/internal/workflow"
 )
 
 // Kind identifies the rule that produced a change.

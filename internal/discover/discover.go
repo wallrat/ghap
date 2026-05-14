@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/wallra/ghap/internal/workflow"
+	"github.com/wallrat/ghap/internal/workflow"
 )
 
 // Files resolves the supplied paths to a deduped, sorted list of workflow

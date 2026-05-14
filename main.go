@@ -1,6 +1,6 @@
 package main
 
-import "github.com/wallra/ghap/cmd"
+import "github.com/wallrat/ghap/cmd"
 
 func main() {
 	cmd.Execute()

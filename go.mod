@@ -1,4 +1,4 @@
-module github.com/wallra/ghap
+module github.com/wallrat/ghap
 
 go 1.25.0
 

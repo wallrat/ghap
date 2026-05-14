@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/wallra/ghap/internal/pinner"
+	"github.com/wallrat/ghap/internal/pinner"
 )
 
 func TestPromptApplyAcceptsY(t *testing.T) {

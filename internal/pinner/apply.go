@@ -3,7 +3,7 @@ package pinner
 import (
 	"sort"
 
-	"github.com/wallra/ghap/internal/workflow"
+	"github.com/wallrat/ghap/internal/workflow"
 )
 
 // Apply rewrites the in-memory file lines for every Change in fp. Caller is

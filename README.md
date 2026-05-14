@@ -1,6 +1,6 @@
 # ghap — GitHub Action Pinner
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/wallra/ghap.svg)](https://pkg.go.dev/github.com/wallra/ghap)
+[![Go Reference](https://pkg.go.dev/badge/github.com/wallrat/ghap.svg)](https://pkg.go.dev/github.com/wallrat/ghap)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A small Go CLI that locks GitHub Actions in your workflow YAMLs to immutable commit SHAs — and keeps them up to date.
@@ -31,13 +31,13 @@ Pinning by hand is tedious; un-pinning to update is worse. `ghap` does both:
 Requires Go 1.25+.
 
 ```sh
-go install github.com/wallra/ghap@latest
+go install github.com/wallrat/ghap@latest
 ```
 
 Or build from source:
 
 ```sh
-git clone https://github.com/wallra/ghap.git
+git clone https://github.com/wallrat/ghap.git
 cd ghap
 go build -o ghap .
 ```

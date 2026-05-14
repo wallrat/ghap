@@ -4,9 +4,9 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/wallra/ghap/internal/action"
-	"github.com/wallra/ghap/internal/resolver"
-	"github.com/wallra/ghap/internal/workflow"
+	"github.com/wallrat/ghap/internal/action"
+	"github.com/wallrat/ghap/internal/resolver"
+	"github.com/wallrat/ghap/internal/workflow"
 	"golang.org/x/sync/errgroup"
 )
 
