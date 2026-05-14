@@ -1,0 +1,68 @@
+version: 2
+
+project_name: ghap
+
+before:
+  hooks:
+    - go mod tidy
+
+gomod:
+  proxy: true
+
+builds:
+  - id: ghap
+    main: .
+    binary: ghap
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w -X github.com/wallra/ghap/cmd.Version={{.Version}}
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+
+nfpms:
+  - id: ghap
+    package_name: ghap
+    file_name_template: "{{ .ConventionalFileName }}"
+    formats:
+      - deb
+      - rpm
+      - apk
+    maintainer: Andreas Bielk <andreas@tailjoy.se>
+    description: Pin GitHub Actions to immutable commit SHAs.
+    homepage: https://github.com/wallra/ghap
+    license: MIT
+    bindir: /usr/bin
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
