@@ -1,9 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/wallra/ghap/internal/discover"
@@ -39,8 +44,8 @@ Commands:
                  With --latest, bump every action to its latest release tag.
 
 Each command accepts files, directories, or git-repo roots (containing
-.github/workflows/). Authentication uses $GITHUB_TOKEN or --token; without
-either, ghap runs anonymously against GitHub's 60/hr cap.`,
+.github/workflows/). Authentication uses --token, $GITHUB_TOKEN, or GitHub
+CLI auth; otherwise ghap runs anonymously against GitHub's 60/hr cap.`,
 	Example: `  ghap .github/workflows                    # inspect every workflow in the repo
   ghap pin .github/workflows/ci.yml         # pin one file
   ghap update --latest .                    # bump every action to latest tag
@@ -66,7 +71,7 @@ func Execute() {
 
 func init() {
 	pflags := rootCmd.PersistentFlags()
-	pflags.StringVar(&g.token, "token", "", "GitHub token (defaults to $GITHUB_TOKEN; anonymous if unset)")
+	pflags.StringVar(&g.token, "token", "", "GitHub token (defaults to $GITHUB_TOKEN, then GitHub CLI auth; anonymous if unset)")
 	pflags.IntVar(&g.concurrency, "concurrency", 8, "max concurrent GitHub API requests")
 	pflags.BoolVar(&g.dryRun, "dry-run", false, "do not write files (applies to pin/update)")
 	pflags.BoolVarP(&g.verbose, "verbose", "v", false, "verbose output (include skipped items)")
@@ -75,16 +80,76 @@ func init() {
 	rootCmd.AddCommand(updateCmd)
 }
 
-// resolveAuthToken honors --token then $GITHUB_TOKEN. Empty string ⇒ anon.
-func resolveAuthToken() string {
-	if g.token != "" {
-		return g.token
-	}
-	return os.Getenv("GITHUB_TOKEN")
+const ghAuthTokenTimeout = 2 * time.Second
+
+var runGHAuthToken = func(ctx context.Context) ([]byte, error) {
+	return exec.CommandContext(ctx, "gh", "auth", "token").Output()
 }
 
-func newResolver() *resolver.Resolver {
-	return resolver.New(resolveAuthToken())
+type authSource string
+
+const (
+	authSourceFlag      authSource = "--token"
+	authSourceEnv       authSource = "GITHUB_TOKEN"
+	authSourceGitHubCLI authSource = "GitHub CLI (gh auth token)"
+	authSourceAnonymous authSource = "anonymous"
+)
+
+type authConfig struct {
+	token  string
+	source authSource
+}
+
+// resolveAuth honors --token, $GITHUB_TOKEN, then GitHub CLI auth.
+// Empty token means anonymous API access.
+func resolveAuth() authConfig {
+	if g.token != "" {
+		return authConfig{token: g.token, source: authSourceFlag}
+	}
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		return authConfig{token: token, source: authSourceEnv}
+	}
+	if token := ghAuthTokenFromCLI(ghAuthTokenTimeout); token != "" {
+		return authConfig{token: token, source: authSourceGitHubCLI}
+	}
+	return authConfig{source: authSourceAnonymous}
+}
+
+func resolveAuthToken() string {
+	return resolveAuth().token
+}
+
+func ghAuthTokenFromCLI(timeout time.Duration) string {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	out, err := runGHAuthToken(ctx)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+func newResolver() (*resolver.Resolver, authSource) {
+	auth := resolveAuth()
+	return resolver.New(auth.token), auth.source
+}
+
+func reportAuthSource(source authSource) {
+	writeAuthSource(os.Stderr, source)
+}
+
+func writeAuthSource(w io.Writer, source authSource) {
+	switch source {
+	case authSourceFlag:
+		fmt.Fprintln(w, "auth: using --token")
+	case authSourceEnv:
+		fmt.Fprintln(w, "auth: using GITHUB_TOKEN")
+	case authSourceGitHubCLI:
+		fmt.Fprintln(w, "auth: using GitHub CLI (gh auth token)")
+	default:
+		fmt.Fprintln(w, "auth: anonymous (60/hr cap)")
+	}
 }
 
 func runTable(args []string) error {
@@ -96,7 +161,10 @@ func runTable(args []string) error {
 		fmt.Fprintln(os.Stderr, "no workflow files found")
 		return nil
 	}
-	res := newResolver()
+	res, authSource := newResolver()
+	if g.verbose {
+		reportAuthSource(authSource)
+	}
 	rows, err := pinner.BuildTableRows(paths, res, g.concurrency)
 	if err != nil {
 		return err
@@ -145,7 +213,7 @@ func reportRowErrors(rows []pinner.TableRow) {
 	}
 	if rateLimited > 0 {
 		cap := "anonymous (60/hr)"
-		fix := "set GITHUB_TOKEN or pass --token to bump to 5000/hr"
+		fix := "set GITHUB_TOKEN, pass --token, or run gh auth login to bump to 5000/hr"
 		if authed {
 			cap = "authenticated (5000/hr)"
 			fix = "wait for reset"

@@ -22,7 +22,7 @@ Pinning by hand is tedious; un-pinning to update is worse. `ghap` does both:
 - **Pin** every action to a full SHA, with the original tag/branch preserved as a trailing comment.
 - **Update** later — `ghap` re-resolves the comment back to the *current* SHA for that tag, or bumps to the latest release.
 - Works on a single file, a folder of workflows, or a repo root (auto-discovers `.github/workflows/`).
-- Concurrent GitHub API calls with in-process HTTP caching and request deduping; honors `$GITHUB_TOKEN`.
+- Concurrent GitHub API calls with in-process HTTP caching and request deduping; honors `$GITHUB_TOKEN` and GitHub CLI auth.
 - Read-only inspection mode prints a table of *current → pin → latest* for every action.
 - Interactive (`-i`) and `--dry-run` modes for safe rollout.
 
@@ -44,12 +44,14 @@ go build -o ghap .
 
 ## Authentication
 
-`ghap` calls the GitHub API to resolve refs and tags. Anonymous requests are capped at 60/hr — enough for a quick look, not enough for a real repo. Export a token to lift the cap to 5000/hr:
+`ghap` calls the GitHub API to resolve refs and tags. Anonymous requests are capped at 60/hr — enough for a quick look, not enough for a real repo. Export a token, pass one directly, or authenticate the GitHub CLI to lift the cap to 5000/hr:
 
 ```sh
 export GITHUB_TOKEN=ghp_xxx
 # or
 ghap --token ghp_xxx ...
+# or
+gh auth login
 ```
 
 A token with no scopes is sufficient for public repos.
@@ -95,7 +97,7 @@ ghap update --latest .
 | `-i`, `--interactive` | Prompt y/n for each change (local to `pin` and `update`). |
 | `--dry-run` | Plan only — print the diff table, don't write files. |
 | `-v`, `--verbose` | Include skipped lines and resolver errors. |
-| `--token` | GitHub token (overrides `$GITHUB_TOKEN`). |
+| `--token` | GitHub token (overrides `$GITHUB_TOKEN` and GitHub CLI auth). |
 | `--concurrency` | Max concurrent API requests (default 8). |
 
 ### Examples

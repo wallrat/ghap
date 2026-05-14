@@ -40,7 +40,10 @@ func runMutate(args []string, mode mutateMode, interactive bool) error {
 		fmt.Fprintln(os.Stderr, "no workflow files found")
 		return nil
 	}
-	res := newResolver()
+	res, authSource := newResolver()
+	if g.verbose {
+		reportAuthSource(authSource)
+	}
 	result, err := pinner.Plan(paths, mode.toPinnerMode(), res, g.concurrency)
 	if err != nil {
 		return err
